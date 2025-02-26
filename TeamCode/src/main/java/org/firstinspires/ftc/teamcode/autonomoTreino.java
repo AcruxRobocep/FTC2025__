@@ -12,6 +12,8 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+
 import org.firstinspires.ftc.teamcode.robo2025.PairMotor;
 
 @Autonomous
@@ -20,6 +22,13 @@ public class autonomoTreino extends LinearOpMode {
     DcMotor viperR;
     DcMotor viperL;
     MecanumDrive drive;
+
+    Servo  bracoOUTake  = hardwareMap.get(Servo.class, "S1");
+    Servo bracoINTakeL  = hardwareMap.get(Servo.class ,"S2");
+    Servo bracoINTakeR  = hardwareMap.get(Servo.class ,"S3");
+    Servo pincaOUTake  = hardwareMap.get(Servo.class ,"S5");
+    Servo pulsoOUTake = hardwareMap.get(Servo.class,"S4");
+
 
     public class upViper implements Action {
 
@@ -63,6 +72,8 @@ public class autonomoTreino extends LinearOpMode {
         }
     }
 
+
+
     public Action downViper(){
         return new downViper();
     }
@@ -71,20 +82,6 @@ public class autonomoTreino extends LinearOpMode {
         return new upViper();
     }
 
-
-
-    public class updatePose implements Action {
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            drive.localizer.update();
-            return false;
-        }
-
-    }
-
-    public Action updatePose(){
-        return new updatePose();
-    }
 
 
     @Override
@@ -139,9 +136,13 @@ public class autonomoTreino extends LinearOpMode {
                 .waitSeconds(0.5)
                 .splineTo(new Vector2d(-59.81, -30.38), Math.toRadians(165.17));
 
-*/
+*//*
+        pulsoOUTake.setPosition(1);
+        bracoOUTake.setPosition(1);
 
-        waitForStart();
+        pincaOUTake.setPosition(-1);
+
+        waitForStart();*/
 
 
         Actions.runBlocking(

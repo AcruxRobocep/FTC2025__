@@ -1,13 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.util.Pair;
-
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoController;
+
 
 @TeleOp
 public class robo2025 extends LinearOpMode {
@@ -17,10 +16,11 @@ public class robo2025 extends LinearOpMode {
     DcMotor LF;
     DcMotor LB;
 
-    Servo ServoOuttake;
-    Servo ServoBracoIntake;
-    Servo ServoPulsoIntake;
-    Servo ServoIntakePinca;
+    Servo bracoOUTake;
+    Servo bracoINTakeL;
+    Servo bracoINTakeR;
+    Servo pincaOUTake;
+    Servo pulsoOUTake;
 
     DcMotor rotor;
 
@@ -33,103 +33,92 @@ public class robo2025 extends LinearOpMode {
     int MAX_VIPER = 3000;
     int MIN_VIPER = 0;
 
-    int time_sleep = 150;
+    int time_sleep = 200;
 
     boolean status = true;
 
-    boolean statusRotor = false;
-    boolean statusPinca = false;
-    boolean statusPulso = false;
-    boolean statusBraco = false;
+    boolean statusPincaOUTAKE = false;
+
+    boolean statusPulsoOUTAKE = false;
+    boolean statusBracoINTAKE = false;
+    boolean statusBracoOUTAKE = false;
+
+    ServoController servoControlleR;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        RF  = hardwareMap.get(DcMotor.class, "M4");
-        RB  = hardwareMap.get(DcMotor.class, "M3");
-        LF  = hardwareMap.get(DcMotor.class, "M2");
-        LB  = hardwareMap.get(DcMotor.class, "M1");
-
+        RF = hardwareMap.get(DcMotor.class, "M4");
+        RB = hardwareMap.get(DcMotor.class, "M3");
+        LF = hardwareMap.get(DcMotor.class, "M2");
+        LB = hardwareMap.get(DcMotor.class, "M1");
         rotor = hardwareMap.get(DcMotor.class, "M8");
 
-        ServoOuttake  = hardwareMap.get(Servo.class ,"S1");
-        ServoBracoIntake  = hardwareMap.get(Servo.class, "S2");
-        ServoPulsoIntake  = hardwareMap.get(Servo.class ,"S3");
-        ServoIntakePinca  = hardwareMap.get(Servo.class ,"S4");
+        bracoOUTake = hardwareMap.get(Servo.class, "S1");
+        bracoINTakeL = hardwareMap.get(Servo.class, "S2");
+        bracoINTakeR = hardwareMap.get(Servo.class, "S3");
+        pincaOUTake = hardwareMap.get(Servo.class, "S4");
 
-        viperR = hardwareMap.get(DcMotor.class,"M6");
-        viperL = hardwareMap.get(DcMotor.class,"M5");
+        pulsoOUTake = hardwareMap.get(Servo.class, "S5");
 
-        __inTake = hardwareMap.get(DcMotor.class,"M7");
+        viperR = hardwareMap.get(DcMotor.class, "M6");
+        viperL = hardwareMap.get(DcMotor.class, "M5");
 
-        ServoOuttake.setPosition(-1);
+        __inTake = hardwareMap.get(DcMotor.class, "M7");
+
 
         LF.setDirection(DcMotorSimple.Direction.REVERSE);
         RF.setDirection(DcMotorSimple.Direction.REVERSE);
         RB.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
-
-
         waitForStart();
 
 
-        while(opModeIsActive()){
-            controle1();
+        while (opModeIsActive()) {
+
             controle2();
+            controle1();
+
+
+            telemetry.addData("MR", viperR.getCurrentPosition());
+            telemetry.addData("ML", viperL.getCurrentPosition());
+            telemetry.update();
+
 
         }
 
     }
 
-    public void controle1(){
+    public void controle1() {
         movimentacao();
         extensor();
     }
 
-    public void controle2(){
+    public void controle2() {
         PairMotor viper = new PairMotor();
-        viper.setMotors(viperR,viperL);
+        viper.setMotors(viperR, viperL);
         intake();
         outtake();
         viperComandos(viper);
-
-
-    }
-
-    public void viperComandos(PairMotor v){
-            if(gamepad2.right_trigger > 0){
-                v.sePMtPower(-gamepad2.right_trigger);
-
-            } else if (gamepad2.left_trigger > 0){
-                v.sePMtPower(gamepad2.left_trigger);
-
-            } else {
-                v.sePMtPower(0);
-            }
+        braco_complexo();
 
     }
 
-    public void extensor(){
-        if(gamepad1.right_stick_button){
-            status = !status;
-            sleep(200);
+    public void viperComandos(PairMotor v) {
+        if (gamepad2.right_trigger > 0) {
+            v.sePMtPower(-gamepad2.right_trigger);
+
+        } else if (gamepad2.left_trigger > 0) {
+            v.sePMtPower(gamepad2.left_trigger);
+
+        } else {
+            v.sePMtPower(0);
         }
 
-        if(status){
-            __inTake.setPower(-0.2);
-
-        }else if(gamepad1.right_bumper){
-            __inTake.setPower(0.5);
-    }
-        else if(gamepad1.left_bumper){
-            __inTake.setPower(-0.5);
-        }
-        else {
-            __inTake.setPower(0);
-        }
     }
 
-    public void movimentacao(){
+
+    public void movimentacao() {
 
         double y = -gamepad1.left_stick_y; // Remember, Y stick is reversed!
         double x = gamepad1.left_stick_x;
@@ -145,17 +134,17 @@ public class robo2025 extends LinearOpMode {
     public static class PairMotor {
         DcMotor m1, m2;
 
-        public void setMotors(DcMotor motor1, DcMotor motor2){
+        public void setMotors(DcMotor motor1, DcMotor motor2) {
             m1 = motor1;
             m2 = motor2;
         }
 
-        public void sePMtPower(double power){
+        public void sePMtPower(double power) {
             m1.setPower(power);
             m2.setPower(power);
         }
 
-        public void sePMtPower(double power1, double power2){
+        public void sePMtPower(double power1, double power2) {
             m1.setPower(power1);
             m2.setPower(power2);
         }
@@ -164,31 +153,127 @@ public class robo2025 extends LinearOpMode {
     }
 
     public void outtake() {
-        if (gamepad2.dpad_up) {
-            ServoOuttake.setPosition(1);
+
+        // Pinça
+
+        if (gamepad2.b) {
+            statusPincaOUTAKE = !statusPincaOUTAKE;
+            sleep(time_sleep);
+        }
+
+        if (statusPincaOUTAKE) {
+            pincaOUTake.setPosition(-1);
+        } else {
+            pincaOUTake.setPosition(1);
 
         }
 
-        if (gamepad2.dpad_down) {
-            ServoOuttake.setPosition(-1);
 
+        // Pulso
+        if (gamepad2.a) {
+            statusPulsoOUTAKE = !statusPulsoOUTAKE;
+            sleep(time_sleep);
+        }
+
+
+        if (statusPulsoOUTAKE) {
+            pulsoOUTake.setPosition(1);
+        } else {
+            pulsoOUTake.setPosition(0);
+        }
+
+
+
+        //  Braço
+        if(gamepad2.x){
+            statusBracoOUTAKE = !statusBracoOUTAKE;
+            sleep(time_sleep);
+        }
+
+        if(statusBracoOUTAKE){
+            bracoOUTake.setPosition(-1);
+        }else {
+            bracoOUTake.setPosition(1);
+        }
+
+    }
+
+    public void intake() {
+        // Rotor
+        if (gamepad2.right_bumper) {
+            rotor.setPower(1);
+        } else if (gamepad2.left_bumper) {
+            rotor.setPower(-0.7);
+        } else {
+            rotor.setPower(0);
+        }
+
+
+        // Braço
+        if (gamepad2.y) {
+            statusBracoINTAKE = !statusBracoINTAKE;
+            sleep(300);
+        }
+
+        if (statusBracoINTAKE) {
+            bracoINTakeL.setPosition(-0.8);
+            bracoINTakeR.setPosition(0.8);
+
+        } else {
+            bracoINTakeL.setPosition(0.5);
+            bracoINTakeR.setPosition(-0.5);
+        }
+
+
+    }
+
+    public void extensor() {
+        if (gamepad1.right_stick_button) {
+            status = !status;
+            sleep(200);
+        }
+
+        if (status) {
+            __inTake.setPower(-0.7);
+
+        } else if (gamepad1.right_bumper) {
+            __inTake.setPower(0.5);
+        } else if (gamepad1.left_bumper) {
+            __inTake.setPower(-0.5);
+        } else {
+            __inTake.setPower(0);
         }
     }
 
-    public void intake(){
-        // Braço
-        if (gamepad2.x){
-            statusRotor = !statusRotor;
+    public void braco_complexo() {
+        //braco complexo mds
+
+        /*
+        if (gamepad2.x) {
+            statusBracoOUTAKE = !statusBracoOUTAKE;
             sleep(time_sleep);
         }
-        if (statusRotor){
-            rotor.setPower(0.6);
+
+
+        if (statusBracoOUTAKE) {
+            bracoOUTake.setPosition(0);
+            pulsoOUTake.setPosition(1);
+            bracoOUTake.setPosition(-1);
         } else {
-            rotor.setPower(-0.6);
-
+            bracoOUTake.setPosition(0);
+            pulsoOUTake.setPosition(0);
+            bracoOUTake.setPosition(1);
         }
+    }
+    */
+        /*
 
-
+        if (statusBracoOUTAKE) {
+            bracoOUTake.setPosition(-1);
+        } else {
+            bracoOUTake.setPosition(1);
+        }
+        /*/
 
     }
 }
