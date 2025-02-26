@@ -1,13 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.util.Pair;
-
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+
 
 @TeleOp
 public class robo2025 extends LinearOpMode {
@@ -18,9 +16,9 @@ public class robo2025 extends LinearOpMode {
     DcMotor LB;
 
     Servo ServoOuttake;
-    Servo ServoBracoIntake;
+    Servo bracoOUTake;
     Servo ServoPulsoIntake;
-    Servo ServoIntakePinca;
+    Servo pincaOUTake;
 
     DcMotor rotor;
 
@@ -48,13 +46,12 @@ public class robo2025 extends LinearOpMode {
         RB  = hardwareMap.get(DcMotor.class, "M3");
         LF  = hardwareMap.get(DcMotor.class, "M2");
         LB  = hardwareMap.get(DcMotor.class, "M1");
-
         rotor = hardwareMap.get(DcMotor.class, "M8");
 
         ServoOuttake  = hardwareMap.get(Servo.class ,"S1");
-        ServoBracoIntake  = hardwareMap.get(Servo.class, "S2");
+        bracoOUTake  = hardwareMap.get(Servo.class, "S2");
         ServoPulsoIntake  = hardwareMap.get(Servo.class ,"S3");
-        ServoIntakePinca  = hardwareMap.get(Servo.class ,"S4");
+        pincaOUTake  = hardwareMap.get(Servo.class ,"S4");
 
         viperR = hardwareMap.get(DcMotor.class,"M6");
         viperL = hardwareMap.get(DcMotor.class,"M5");
@@ -109,25 +106,6 @@ public class robo2025 extends LinearOpMode {
 
     }
 
-    public void extensor(){
-        if(gamepad1.right_stick_button){
-            status = !status;
-            sleep(200);
-        }
-
-        if(status){
-            __inTake.setPower(-0.2);
-
-        }else if(gamepad1.right_bumper){
-            __inTake.setPower(0.5);
-    }
-        else if(gamepad1.left_bumper){
-            __inTake.setPower(-0.5);
-        }
-        else {
-            __inTake.setPower(0);
-        }
-    }
 
     public void movimentacao(){
 
@@ -164,15 +142,30 @@ public class robo2025 extends LinearOpMode {
     }
 
     public void outtake() {
-        if (gamepad2.dpad_up) {
-            ServoOuttake.setPosition(1);
 
+
+
+        if(gamepad2.y){
+            statusBraco = !statusBraco;
         }
 
-        if (gamepad2.dpad_down) {
-            ServoOuttake.setPosition(-1);
-
+        if(statusBraco){
+            bracoOUTake.setPosition(1);
+        }else {
+            bracoOUTake.setPosition(0);
         }
+
+        if(gamepad2.a){
+            statusPinca = !statusPinca;
+        }
+
+        if(statusPinca){
+            pincaOUTake.setPosition(1);
+        }else {
+            pincaOUTake.setPosition(0);
+        }
+
+
     }
 
     public void intake(){
@@ -191,4 +184,31 @@ public class robo2025 extends LinearOpMode {
 
 
     }
+
+    public void extensor(){
+        if(gamepad1.right_stick_button){
+            status = !status;
+            sleep(200);
+        }
+
+        if(status){
+            __inTake.setPower(-0.2);
+
+        }else if(gamepad1.right_bumper){
+            __inTake.setPower(0.5);
+        }
+        else if(gamepad1.left_bumper){
+            __inTake.setPower(-0.5);
+        }
+        else {
+            __inTake.setPower(0);
+        }
+    }
+
+
+
+
+
+
+
 }

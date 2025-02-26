@@ -1,0 +1,25 @@
+ * Fazer funções para controles que usam a lógica de estados
+
+
+    public void controller(Gamepad btn, boolean varStatus, Servo motor){
+        if(varStatus){
+
+            motor.setPosition(1);
+        }else {
+            motor.setPosition(0);
+        }
+    }
+    public void controller(Gamepad btn, boolean varStatus, CRServo motor){
+        if(varStatus){
+            motor.setPower(1);
+        }else {
+            motor.setPower(0);
+        }
+    }
+    public void controller(Gamepad btn, boolean varStatus, DcMotor motor){
+        if(varStatus){
+            motor.setPower(1);
+        }else {
+            motor.setPower(0);
+        }
+    }

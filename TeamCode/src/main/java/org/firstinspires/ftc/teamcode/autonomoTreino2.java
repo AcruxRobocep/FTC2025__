@@ -90,19 +90,12 @@ public class autonomoTreino2 extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Pose2d posInicial = new Pose2d(-24.576541312975472, -62.93794794647305, Math.toRadians(0));
-        //Pose2d posInicial = new Pose2d(-8.56845649835951,-62.2972301170795,Math.toRadians(180));
         drive = new MecanumDrive(hardwareMap, posInicial);
 
 
 
-
-
-
-
-
-        // .strafeTo(new Vector2d(-8.56845649835951,-34));
-
         TrajectoryActionBuilder traj0 = drive.actionBuilder(new Pose2d(-17.98, -63.75, Math.toRadians(0)))
+                // Trajetória basquete+espécimes
                 .splineTo(new Vector2d(-4.42, -33.89), Math.toRadians(-90))
                 .splineTo(new Vector2d(-48.26, -38.00), Math.toRadians(90))
                 .splineTo(new Vector2d(-55.72, -55.72), Math.toRadians(45))
@@ -114,13 +107,44 @@ public class autonomoTreino2 extends LinearOpMode {
                 .splineTo(new Vector2d(-23.93, -10.99), Math.toRadians(0));
 
 
+
+        TrajectoryActionBuilder traj1 = drive.
+        actionBuilder(new Pose2d(24.58, -62.94, Math.toRadians(0)))
+                //Trajetória espécimes
+                .strafeToLinearHeading(new Vector2d(12.00, -34.00), Math.toRadians(90.00))
+                .strafeTo(new Vector2d(40.18, -33.78))
+                .splineTo(new Vector2d(36.67, -2.79), Math.toRadians(0))
+                .splineTo(new Vector2d(49.48, -20.56), Math.toRadians(265.24))
+                .strafeTo(new Vector2d(49.00, -62.00))
+                .strafeTo(new Vector2d(49.00, -9.00))
+                .strafeTo(new Vector2d(59.00, -9.00))
+                .strafeTo(new Vector2d(59.00, -62.00))
+                .strafeTo(new Vector2d(59.00, -9.00))
+                .strafeTo(new Vector2d(64.98, -8.99))
+                .strafeTo(new Vector2d(64.98, -62.00))
+                .strafeTo(new Vector2d(49.00, -39.00))
+                .strafeTo(new Vector2d(49.00, -62.00))
+                .strafeTo(new Vector2d(12.00, -34.00))
+                .strafeTo(new Vector2d(49.00, -39.00))
+                .strafeTo(new Vector2d(49.00, -62.00))
+                .strafeTo(new Vector2d(12.00, -34.00))
+                .strafeTo(new Vector2d(49.00, -39.00))
+                .strafeTo(new Vector2d(12.00, -34.00))
+                .strafeTo(new Vector2d(54.00, -63.00));
+
+
+
+
+
+
+
         waitForStart();
 
 
         Actions.runBlocking(
                 new SequentialAction(
-                    traj0.build()
-
+                    //traj0.build(),
+                    traj1.build()
 
                 )
         );
