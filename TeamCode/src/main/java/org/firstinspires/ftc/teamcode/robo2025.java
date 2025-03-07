@@ -120,7 +120,7 @@ public class robo2025 extends LinearOpMode {
 
     public void movimentacao() {
 
-        double y = -gamepad1.left_stick_y; // Remember, Y stick is reversed!
+        double y = -gamepad1.left_stick_y;
         double x = gamepad1.left_stick_x;
         double r = gamepad1.right_stick_x;
         LF.setPower(y + x + r);
